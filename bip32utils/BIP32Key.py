@@ -10,10 +10,10 @@ import hashlib
 import ecdsa
 import struct
 import codecs
-from . import Base58
+import Base58
 
 from hashlib import sha256
-from binascii import b2a_hex
+from binascii import b2a_hex, hexlify
 from ecdsa.curves import SECP256k1
 from ecdsa.ecdsa import int_to_string, string_to_int
 from ecdsa.numbertheory import square_root_mod_prime as sqrt_mod
@@ -285,7 +285,7 @@ class BIP32Key(object):
 
     def Address(self):
         "Return compressed public key address"
-        addressversion = b'\x00' if not self.testnet else b'\x6f'
+        addressversion = b'\x42' if not self.testnet else b'\x6f'
         vh160 = addressversion + self.Identifier()
         return Base58.check_encode(vh160)
 
@@ -307,7 +307,7 @@ class BIP32Key(object):
         "Returns private key encoded for wallet import"
         if self.public:
             raise Exception("Publicly derived deterministic keys have no private half")
-        addressversion = b'\x80' if not self.testnet else b'\xef'
+        addressversion = b'\x4c' if not self.testnet else b'\xef'
         raw = addressversion + self.k.to_string() + b'\x01' # Always compressed
         return Base58.check_encode(raw)
 
@@ -344,7 +344,7 @@ class BIP32Key(object):
         print("     * (main addr):", self.Address())
         if self.public is False:
             print("   * Secret key")
-            print("     * (hex):      ", self.PrivateKey().hex())
+            print("     * (hex):      ", hexlify(self.PrivateKey()))
             print("     * (wif):      ", self.WalletImportFormat())
         print("   * Public key")
         print("     * (hex):      ", b2a_hex(self.PublicKey()))
@@ -352,9 +352,11 @@ class BIP32Key(object):
         print("     * (hex):      ", b2a_hex(self.C))
         print("   * Serialized")
         print("     * (pub hex):  ", b2a_hex(self.ExtendedKey(private=False, encoded=False)))
-        print("     * (prv hex):  ", b2a_hex(self.ExtendedKey(private=True, encoded=False)))
+        if self.public is False:
+            print("     * (prv hex):  ", b2a_hex(self.ExtendedKey(private=True, encoded=False)))
         print("     * (pub b58):  ", self.ExtendedKey(private=False, encoded=True))
-        print("     * (prv b58):  ", self.ExtendedKey(private=True, encoded=True))
+        if self.public is False:
+            print("     * (prv b58):  ", self.ExtendedKey(private=True, encoded=True))
 
 
 if __name__ == "__main__":
@@ -371,22 +373,20 @@ if __name__ == "__main__":
     print("* [Chain m/0h]")
     m = m.ChildKey(0+BIP32_HARDEN)
     m.dump()
-
-    print("* [Chain m/0h/1]")
-    m = m.ChildKey(1)
-    m.dump()
+    print("* From Child Key [Chain m/0h]")
+    q= BIP32Key.fromExtendedKey(m.ExtendedKey(private=False, encoded=True))
 
     print("* [Chain m/0h/1/2h]")
-    m = m.ChildKey(2+BIP32_HARDEN)
-    m.dump()
+    q = q.ChildKey(2)
+    q.dump()
 
     print("* [Chain m/0h/1/2h/2]")
-    m = m.ChildKey(2)
-    m.dump()
+    q = q.ChildKey(2)
+    q.dump()
 
     print("* [Chain m/0h/1/2h/2/1000000000]")
-    m = m.ChildKey(1000000000)
-    m.dump()
+    q = q.ChildKey(1000000000)
+    q.dump()
 
     # BIP0032 Test vector 2
     entropy = 'fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542'.decode('hex')

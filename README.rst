@@ -36,10 +36,10 @@ BIP0032 is in draft stage, is subject to change, and is documented at:
 
 https://github.com/sipa/bips/blob/bip32update/bip-0032.mediawiki
 
-Python bip32gen Script
+Python tao_bip32gen Script
 ======================
 
-This library installs the bip32gen script into $PREFIX/bin, which
+This library installs the tao_bip32gen script into $PREFIX/bin, which
 wraps a command-line interface around the BIP32Key class functionality
 described in a later section:
 
@@ -48,8 +48,8 @@ Script Parameters
 
 ::
 
-    $ bip32gen -h
-    usage: bip32gen [-h] [-x] [-X] -i {entropy,xprv,xpub} [-n AMOUNT]
+    $ tao_bip32gen -h
+    usage: tao_bip32gen [-h] [-x] [-X] -i {entropy,xprv,xpub} [-n AMOUNT]
                     [-f FROM_FILE] [-F TO_FILE] -o OUTPUT_TYPE [-v] [-d]
                     chain [chain ...]
 
@@ -94,7 +94,7 @@ output the serialized extended private key for that to stdout:
 
 ::
 
-    $ bip32gen -i entropy -f /dev/random -n 128 -o xprv -F - m
+    $ tao_bip32gen -i entropy -f /dev/random -n 128 -o xprv -F - m
     xprv9s21ZrQH143K3eqKCaAW9CvAiKR8SHdikQnR8dVs8eBxC9fYtW69k1gLRTG5o2Rn3gtz651yFGzxRFjtfjLQHmh4kT7YF3vZcZgGdfX7ZVS
 
 To generate the BIP0032 test vector #1, using entropy
@@ -106,7 +106,7 @@ hex encoding where applicable, and writing to stdout:
 ::
 
     $ echo 000102030405060708090A0B0C0D0E0F | \
-        bip32gen -v \
+        tao_bip32gen -v \
         -i entropy -f - -x \
         -o privkey,wif,pubkey,addr,xprv,xpub -F - -X \
         m \
@@ -134,7 +134,7 @@ course this would be unique for each situation):
 ::
 
     $ echo 000102030405060708090A0B0C0D0E0F | \
-        bip32gen \
+        tao_bip32gen \
         -i entropy -f - -x \
         -o xpub -F - \
         m/0h/0
@@ -146,20 +146,20 @@ key generator using that extended public key as input:
 ::
 
     $ echo xpub6ASuArnXKPbfEVRpCesNx4P939HDXENHkksgxsVG1yNp9958A33qYoPiTN9QrJmWFa2jNLdK84bWmyqTSPGtApP8P7nHUYwxHPhqmzUyeFG | \
-         bip32gen \
+         tao_bip32gen \
          -i xpub -f - \
          -o addr -F - \
          0 1 2 3 4 5 6 7 8 9
-    1BvgsfsZQVtkLS69NvGF8rw6NZW2ShJQHr
-    1B1TKfsCkW5LQ6R1kSXUx7hLt49m1kwz75
-    1D2LvY1T3yT4xWgoXkXhAbh1fbY39owifJ
-    1L71JnrWfB45Z1g2et1zeDAkzrpY8eyJMH
-    1ACa2mfirthEwmnHVHcBEAVfTHJkajpjod
-    1CR1rZqA8cwbohoj9bNmcrYxx31Zx2jw4c
-    1PkyqPChrqwM1dee8KTMpsWWBuXgmGVNoi
-    1L3HVcGagSUEb2d24SfHV7Kyu6kUNpDL51
-    17JbSP83rPWmbdcdtiiTNqBE8MgGN8kmUk
-    1MWb4Pv4ZCUmbnFgA5D3MtYyhMh4q8KCrd
+    TkEVrqYaGQUaK3HrzcFH98u1urWHJjYD38
+    TjKGJqYDcQfANhcjN8WWxPfGRMA1twZjQB
+    TmL9uhgTut2tw7tX9SWjAsewCtYHyMKL1y
+    TtQpHxXXX5duXcskGa12eV8gY9pnxkCSqw
+    TiWP1wLjioH4vNz16ybDESTazaK1ZhmCDF
+    TkipqjWAzXXRnK1SmHMod8WtVL1pxg4QJf
+    Tx4npYsiikXAzErMk1SPq9URjCXwiQdzmH
+    TtM6UmwbYM44Zdpjg8eKVPHuSPkjMP4CWh
+    TfcQRYo4iJ6baEpMWQhVP799fegXGZsvQz
+    TupQ3Zb5R74baPTPmmC5NAWuEehKiFMys8
 
 An offline machine could generate the corresponding private keys to
 spend from those addresses by using an *extended private key* for the
@@ -168,7 +168,7 @@ account:
 ::
 
     $ echo 000102030405060708090A0B0C0D0E0F | \
-        bip32gen \
+        tao_bip32gen \
         -i entropy -f - -x \
         -o xprv -F - \
         m/0h/0
@@ -179,20 +179,20 @@ Then to generate the corresponding private keys (here shown in wallet import for
 ::
 
     $ echo xprv9wTYmMFdV23N21MM6dLNavSQV7Sj7meSPXx6AV5eTdqqGLjycVjb115Ec5LgRAXscPZgy5G4jQ9csyyZLN3PZLxoM1h3BoPuEJzsgeypdKj | \
-         bip32gen \
+         tao_bip32gen \
          -i xprv -f - \
          -o wif -F - \
          0 1 2 3 4 5 6 7 8 9
-    L3dzheSvHWc2scJdiikdZmYdFzPcvZMAnT5g62ikVWZdBewoWpL1
-    L22jhG8WTNmuRtqFvzvpnhe32F8FefJFfsLJpSr1CYsRrZCyTwKZ
-    KwhVMKLLSMt7DemnUxhSftkdqPjWYmPKt31nmV3BB7TdVaMFzqgP
-    KySK2geQrXWYR7f2p9C9Exr4CLngFQnnzQegSaKAfxNupqecSwdU
-    KxSKj3b3EdHSyN3C5sSwRL7TMmxpEVkJ7Cw4fQTMUYXsCZRbmBAP
-    L5kxG5qokHeTJSwco5JzCEdAy5TN2M2Tj2QvxGpvVuSVP5bJRAUT
-    L3oTQGyHQvE3GkRQJkgPs9vY8NRTxdwacHu9Xu9QBPTpgHCSGume
-    KxABnXp7SiuWi218c14KkjEMV7SjcfXnvsWaveNVxWZU1Rwi8zNQ
-    L1Zku8j3mCiiHxZdo6NDLHv6jcA1JyNufUSHBMiznML38vNr9Agh
-    L46bxscw878ytxNHro7ghNXuybUv8aNJAY1UudH1HUxD2pecBhR8
+    CMVCyFi9BWxtChcgxnECAidJKPwhWoFNKUgtzQhpxdNcYSaHoana
+    CKswxsPjMP8kkz9KB4QPPeii5egLEuCTCtwXipq5ffgRDLusajRT
+    CFYhcvbZLNExYk5qj2B1GqqJtoHb91HXR4d1fs2FeEGcrMvqLG6J
+    CHHXJHudkXsPkCy64CfhquvjFkLkqegzXSFuLxJF95BuBdPgCA5H
+    CGHXzerG8deJJTMFKvvW2HC8RBWtpjeVeEYHZnSRwfLrZM72dcVT
+    CPcAXh72eJ1JdYFg38nYoBhr2V1ScavfG429reozy2FUjsFq4BDs
+    CMefftEWJvatbqjTYp9xU71DBmyYYsqn9KWNSH8UeWGp34vwbwvv
+    CG1Q495LLjGN37KBr4XtMgK2YWzpCuRzTu7oq2MaRdNTNDcw7Hwh
+    CKQyAjzGfD5Zd3sh39qmwEzmo1i5uDH7CW3W5ji5FU92VhwktCCJ
+    CMwpEUtA27VqE3gM6rbFJKcb312zipGVhZchp1G5kbmCPcQBpPu6
 
 Python bip32utils Library
 =========================
